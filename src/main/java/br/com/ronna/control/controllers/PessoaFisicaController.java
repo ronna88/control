@@ -38,6 +38,14 @@ public class PessoaFisicaController {
         return ResponseEntity.status(HttpStatus.OK).body(listaClientePF);
     }
 
+    @GetMapping("empresa/{empresaId}")
+    public ResponseEntity<List<PessoaFisicaModel>> buscarTodosClientesPFPorEmpresa(@PathVariable(value = "empresaId") UUID empresaId){
+        log.debug("Listando todos clientes PF da empresa {}...", empresaId);
+        List<PessoaFisicaModel> listaClientePF = pessoaFisicaService.findAllByEmpresaId(empresaId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(listaClientePF);
+    }
+
     @GetMapping("{clienteId}")
     public ResponseEntity<Object> buscaCliente(@PathVariable(value = "clienteId")UUID clienteId){
         log.debug("Buscando cliente com ID: {}", clienteId);

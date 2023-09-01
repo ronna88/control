@@ -46,4 +46,9 @@ public class PessoaFisicaServiceImpl implements PessoaFisicaService {
         return pessoaFisicaRepository.existsByClienteCPF(clienteCPF);
     }
 
+    @Override
+    public List<PessoaFisicaModel> findAllByEmpresaId(UUID empresaId) {
+        return pessoaFisicaRepository.findAllPessoasFisicasIntoEmpresa(empresaId);
+    }
+
 }

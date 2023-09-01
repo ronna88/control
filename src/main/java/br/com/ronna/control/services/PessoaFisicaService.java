@@ -18,4 +18,5 @@ public interface PessoaFisicaService {
 
     boolean existsByClienteCPF(String clienteCPF);
 
+    List<PessoaFisicaModel> findAllByEmpresaId(UUID empresaId);
 }
