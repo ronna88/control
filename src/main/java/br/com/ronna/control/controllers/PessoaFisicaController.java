@@ -3,8 +3,10 @@ package br.com.ronna.control.controllers;
 import br.com.ronna.control.dtos.PessoaFisicaDto;
 import br.com.ronna.control.dtos.PessoaJuridicaDto;
 import br.com.ronna.control.enums.ClienteStatus;
+import br.com.ronna.control.models.EmpresaModel;
 import br.com.ronna.control.models.PessoaFisicaModel;
 import br.com.ronna.control.models.PessoaJuridicaModel;
+import br.com.ronna.control.services.EmpresaService;
 import br.com.ronna.control.services.PessoaFisicaService;
 import br.com.ronna.control.services.PessoaJuridicaService;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +31,9 @@ public class PessoaFisicaController {
 
     @Autowired
     private PessoaFisicaService pessoaFisicaService;
+
+    @Autowired
+    private EmpresaService empresaService;
 
     @GetMapping
     public ResponseEntity<List<PessoaFisicaModel>> buscarTodasClientesPJ(){
@@ -70,6 +75,18 @@ public class PessoaFisicaController {
         var clientePFModel = new PessoaFisicaModel();
         BeanUtils.copyProperties(pessoaFisicaDto, clientePFModel);
 
+        if(pessoaFisicaDto.getEmpresa() != null){
+            var empresaModel = empresaService.findById( pessoaFisicaDto.getEmpresa() );
+            if(empresaModel.isPresent()) {
+                clientePFModel.setEmpresa(empresaModel.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Empresa informada não foi encontrada! empresaId: " + pessoaFisicaDto.getEmpresa());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Cliente deve estar vinculado a uma empresa!");
+        }
+
+
         clientePFModel.setClienteStatus(ClienteStatus.ATIVO);
         clientePFModel.setClienteDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         clientePFModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
@@ -90,6 +107,17 @@ public class PessoaFisicaController {
 
             BeanUtils.copyProperties(pessoaFisicaDto, pessoaFisicaModel);
             pessoaFisicaModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+
+            if(pessoaFisicaDto.getEmpresa() != null) {
+                var empresaModelOptional = empresaService.findById(pessoaFisicaDto.getEmpresa());
+                if(empresaModelOptional.isPresent()) {
+                    pessoaFisicaModel.setEmpresa(empresaModelOptional.get());
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Empresa informada não encontrada!");
+                }
+            } else {
+                pessoaFisicaModel.setEmpresa(pessoaFisicaModel.getEmpresa());
+            }
 
             pessoaFisicaService.save(pessoaFisicaModel);
 

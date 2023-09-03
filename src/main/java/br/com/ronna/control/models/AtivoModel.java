@@ -1,8 +1,8 @@
 package br.com.ronna.control.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -36,4 +36,8 @@ public class AtivoModel {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime ativoDataAtualizacao;
 
+    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name="contratoId")
+    private ContratoModel contrato;
 }

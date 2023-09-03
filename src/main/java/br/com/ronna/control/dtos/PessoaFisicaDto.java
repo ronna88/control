@@ -2,6 +2,8 @@ package br.com.ronna.control.dtos;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class PessoaFisicaDto {
 
@@ -25,6 +27,6 @@ public class PessoaFisicaDto {
 
     private String clienteCPF;
 
-    private String clienteEmpresa;
+    private UUID empresa;
 
 }

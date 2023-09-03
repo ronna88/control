@@ -76,8 +76,17 @@ public class PessoaJuridicaController {
         var clientePJModel = new PessoaJuridicaModel();
         BeanUtils.copyProperties(pessoaJuridicaDto, clientePJModel);
 
-       var empresaModel =  empresaService.findById( pessoaJuridicaDto.getClienteEmpresa() );
-       clientePJModel.setEmpresa(empresaModel.get());
+        if(pessoaJuridicaDto.getEmpresa() != null) {
+            var empresaModel =  empresaService.findById( pessoaJuridicaDto.getEmpresa() );
+            if(empresaModel.isPresent()) {
+                clientePJModel.setEmpresa(empresaModel.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Empresa informada não foi encontrada! empresaId: " + pessoaJuridicaDto.getEmpresa());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Cliente deve estar vinculado a uma empresa!");
+        }
+
 
 
         clientePJModel.setClienteStatus(ClienteStatus.ATIVO);
@@ -99,6 +108,17 @@ public class PessoaJuridicaController {
             var pessoaJuridicaModel = pessoaJuridicaModelOptional.get();
             BeanUtils.copyProperties(pessoaJuridicaDto, pessoaJuridicaModel);
             pessoaJuridicaModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+
+            if(pessoaJuridicaDto.getEmpresa() != null) {
+                var empresaModelOptional = empresaService.findById(pessoaJuridicaDto.getEmpresa());
+                if(empresaModelOptional.isPresent()) {
+                    pessoaJuridicaModel.setEmpresa(empresaModelOptional.get());
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Empresa informada não encontrada!");
+                }
+            } else {
+                pessoaJuridicaModel.setEmpresa(pessoaJuridicaModel.getEmpresa());
+            }
 
             pessoaJuridicaService.save(pessoaJuridicaModel);
 

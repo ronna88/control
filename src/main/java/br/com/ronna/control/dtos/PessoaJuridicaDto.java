@@ -31,6 +31,6 @@ public class PessoaJuridicaDto {
 
     private String clienteInscricaoEstadual;
 
-    private UUID clienteEmpresa;
+    private UUID empresa;
 
 }

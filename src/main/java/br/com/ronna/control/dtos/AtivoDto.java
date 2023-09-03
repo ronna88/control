@@ -2,6 +2,8 @@ package br.com.ronna.control.dtos;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class AtivoDto {
 
@@ -10,4 +12,6 @@ public class AtivoDto {
     private double ativoValorCompra;
 
     private double ativoValorLocacao;
+
+    private UUID ativoContrato;
 }

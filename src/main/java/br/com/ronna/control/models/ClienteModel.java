@@ -63,4 +63,6 @@ public class ClienteModel {
     @ManyToOne(optional = false)
     private EmpresaModel empresa;
 
+    @OneToOne
+    private ContratoModel contrato;
 }

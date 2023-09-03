@@ -1,8 +1,9 @@
 package br.com.ronna.control.models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +11,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
+@Entity
+@Table(name = "TB_CONTRATOS")
 public class ContratoModel {
 
     @Id
@@ -26,11 +30,13 @@ public class ContratoModel {
     @Column(nullable = false)
     private double contratoValorRemoto;
 
-    @Column(nullable = true)
+    @JsonBackReference
+    @OneToMany(mappedBy = "contrato")
+    @Fetch(FetchMode.SUBSELECT)
     private Set<AtivoModel> listaAtivos;
 
-    @Column(nullable = false)
-    private Set<ClienteModel> listaClientes;
+    @OneToOne(optional = false)
+    private ClienteModel cliente;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")

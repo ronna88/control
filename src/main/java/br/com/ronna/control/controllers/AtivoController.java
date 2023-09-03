@@ -3,6 +3,7 @@ package br.com.ronna.control.controllers;
 import br.com.ronna.control.dtos.AtivoDto;
 import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.services.AtivoService;
+import br.com.ronna.control.services.ContratoService;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.apache.catalina.connector.Response;
@@ -27,6 +28,9 @@ public class AtivoController {
     @Autowired
     AtivoService ativoService;
 
+    @Autowired
+    ContratoService contratoService;
+
     @GetMapping()
     public ResponseEntity<List<AtivoModel>> buscarTodosAtivos(){
         log.debug("Listando todos os ativos...");
@@ -45,12 +49,32 @@ public class AtivoController {
         }
     }
 
+    @GetMapping("/contrato/{contratoId}")
+    public ResponseEntity<Object> buscarAtivoPorContrato(@PathVariable (value = "contratoId")UUID contratoId){
+        log.debug("Buscando ativos contratoUUID: {}", contratoId);
+        List<AtivoModel> ativoModelList = ativoService.findAllByContratoContratoId(contratoId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ativoModelList);
+
+    }
+
     @PostMapping("/novo")
     public ResponseEntity<Object> criarAtivo(@RequestBody AtivoDto ativoDto) {
         log.debug("Criação de ativo...");
 
         var ativoModel = new AtivoModel();
         BeanUtils.copyProperties(ativoDto, ativoModel);
+
+        if(ativoDto.getAtivoContrato() != null) {
+            var contratoModel = contratoService.findById(ativoDto.getAtivoContrato());
+            if(contratoModel.isPresent()) {
+                ativoModel.setContrato(contratoModel.get());
+            } else {
+                ativoModel.setContrato(null);
+            }
+        }
+
+
         ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
 
