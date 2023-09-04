@@ -36,8 +36,8 @@ public class AtivoModel {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime ativoDataAtualizacao;
 
-    @JsonManagedReference
-    @ManyToOne
-    @JoinColumn(name="contratoId")
-    private ContratoModel contrato;
+    //@JsonManagedReference
+    //@ManyToOne
+    //@JoinColumn(name="contratoId")
+    //private ContratoModel contrato;
 }

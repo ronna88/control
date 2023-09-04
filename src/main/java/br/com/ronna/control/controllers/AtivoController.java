@@ -48,7 +48,7 @@ public class AtivoController {
             return ResponseEntity.status(HttpStatus.OK).body(ativoModelOptional.get());
         }
     }
-
+/*
     @GetMapping("/contrato/{contratoId}")
     public ResponseEntity<Object> buscarAtivoPorContrato(@PathVariable (value = "contratoId")UUID contratoId){
         log.debug("Buscando ativos contratoUUID: {}", contratoId);
@@ -56,7 +56,7 @@ public class AtivoController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ativoModelList);
 
-    }
+    }*/
 
     @PostMapping("/novo")
     public ResponseEntity<Object> criarAtivo(@RequestBody AtivoDto ativoDto) {
@@ -65,6 +65,7 @@ public class AtivoController {
         var ativoModel = new AtivoModel();
         BeanUtils.copyProperties(ativoDto, ativoModel);
 
+        /*
         if(ativoDto.getAtivoContrato() != null) {
             var contratoModel = contratoService.findById(ativoDto.getAtivoContrato());
             if(contratoModel.isPresent()) {
@@ -73,7 +74,7 @@ public class AtivoController {
                 ativoModel.setContrato(null);
             }
         }
-
+        */
 
         ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
