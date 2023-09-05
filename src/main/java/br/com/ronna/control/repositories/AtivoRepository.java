@@ -9,5 +9,5 @@ import java.util.UUID;
 
 public interface AtivoRepository extends JpaRepository<AtivoModel, UUID>, JpaSpecificationExecutor<AtivoModel> {
 
-    List<AtivoModel> findAllByContratoContratoId(UUID contratoId);
+    //List<AtivoModel> findAllByContratoContratoId(UUID contratoId);
 }

@@ -37,8 +37,8 @@ public class AtivoServiceImpl implements AtivoService {
         ativoRepository.save(ativoModel);
     }
 
-    @Override
+    /*@Override
     public List<AtivoModel> findAllByContratoContratoId(UUID contratoId) {
         return ativoRepository.findAllByContratoContratoId(contratoId);
-    }
+    }*/
 }

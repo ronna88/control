@@ -1,6 +1,7 @@
 package br.com.ronna.control.controllers;
 
 import br.com.ronna.control.dtos.ContratoDto;
+import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.models.ContratoModel;
 import br.com.ronna.control.services.*;
 import lombok.extern.log4j.Log4j2;
@@ -58,11 +59,24 @@ public class ContratoController {
         contratoModel.setContratoValorRemoto(contratoDto.getContratoValorRemoto());
         contratoModel.setContratoValorVisita(contratoDto.getContratoValorVisita());
 
+        Set<AtivoModel> ativoTemp = new HashSet<>();
+        if(!contratoDto.getListaAtivos().isEmpty()) {
+            contratoDto.getListaAtivos().forEach(ativoM -> {
+                var ativoModelOptional = ativoService.findById(ativoM.getAtivoId());
+                if(ativoModelOptional.isPresent()){
+                    ativoTemp.add(ativoModelOptional.get());
+                }
+            });
+        }
+
+        if(!ativoTemp.isEmpty()) {
+            contratoModel.setListaAtivos(ativoTemp);
+        }
+
         if(contratoDto.getCliente() != null) {
            var clienteModel = clienteService.findById(contratoDto.getCliente());
-           log.warn("OOOOO 1: " + clienteModel.get());
+           log.warn("Erro: " + clienteModel.get());
            if(clienteModel.isPresent()) {
-               log.warn("Entrei!!");
                contratoModel.setCliente(clienteModel.get());
            }
 
@@ -75,23 +89,23 @@ public class ContratoController {
         contratoModel.setContratoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
 
-        log.warn("TESTE AQUI : CLIENTE " + contratoModel.getCliente());
-
         contratoService.save(contratoModel);
         log.debug("POST criarContrato contratoModel salvo {}", contratoModel.toString());
         log.info("Contrato criado com sucesso contratoId {}", contratoModel.getContratoId());
 
+
+        /*
         if(!contratoDto.getListaAtivos().isEmpty()) {
             contratoDto.getListaAtivos().forEach(ativoModelDto -> {
                 var ativoModelOptional = ativoService.findById(ativoModelDto.getAtivoId());
                 if(ativoModelOptional.isPresent()) {
-                    ativoModelOptional.get().setContrato(contratoModel);
+                    //ativoModelOptional.get().setContrato(contratoModel);
                     ativoService.save(ativoModelOptional.get());
                 }
             });
         } else {
             log.warn("Sem ativos selecionados na criação do contrato!");
-        }
+        }*/
 
         return ResponseEntity.status(HttpStatus.CREATED).body(contratoModel);
     }

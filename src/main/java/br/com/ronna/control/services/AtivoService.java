@@ -17,6 +17,6 @@ public interface AtivoService {
 
     void save(AtivoModel ativoModel);
 
-    List<AtivoModel> findAllByContratoContratoId(UUID contratoId);
+    //List<AtivoModel> findAllByContratoContratoId(UUID contratoId);
 
 }

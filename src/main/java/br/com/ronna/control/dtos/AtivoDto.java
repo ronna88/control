@@ -13,5 +13,4 @@ public class AtivoDto {
 
     private double ativoValorLocacao;
 
-    private UUID ativoContrato;
 }
