@@ -8,6 +8,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -33,13 +34,19 @@ public class VisitaModel {
     private String visitaDescricao;
 
     @ManyToMany
-    private List<FuncionarioModel> funcionarios;
+    private Set<FuncionarioModel> funcionarios;
 
     @ManyToOne
-    @JoinColumn(name = "contratoId")
+    @JoinColumn(name = "clienteId")
     private ClienteModel cliente;
 
+    @ManyToOne
+    @JoinColumn(name = "localId")
+    private LocalModel local;
+
     private Double visitaValorProdutos;
+
+    private Double visitaTotalAbono;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")

@@ -1,0 +1,88 @@
+package br.com.ronna.control.controllers;
+
+import br.com.ronna.control.dtos.LocalDto;
+import br.com.ronna.control.models.LocalModel;
+import br.com.ronna.control.services.ClienteService;
+import br.com.ronna.control.services.LocalService;
+import lombok.extern.log4j.Log4j2;
+import lombok.var;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@Log4j2
+@CrossOrigin(origins = "*", maxAge = 3600)
+@RequestMapping("/local")
+public class LocalController {
+
+    @Autowired
+    LocalService localService;
+
+    @Autowired
+    ClienteService clienteService;
+
+    @GetMapping("/{clienteId}")
+    public ResponseEntity<Object> listaLocaisPorCliente(@PathVariable (value = "clienteId") UUID clienteId) {
+        var clienteModelOptional = clienteService.findById(clienteId);
+        if(!clienteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Cliente não encontrado!");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(localService.findAllByClienteClienteId(clienteId));
+    }
+
+    @PostMapping("/{clienteId}")
+    public ResponseEntity<Object> criarLocal(@PathVariable (value = "clienteId") UUID clienteId, @RequestBody LocalDto localDto) {
+        var clienteModelOptional = clienteService.findById(clienteId);
+        if(!clienteModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Cliente não encontrado!");
+        }
+
+        var localModel = new LocalModel();
+        BeanUtils.copyProperties(localDto, localModel);
+
+        localModel.setCliente(clienteModelOptional.get());
+
+        localModel.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        localModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+
+        localService.save(localModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(localModel);
+    }
+
+    @RequestMapping(value = "/{clienteId}/{localId}", method = RequestMethod.PUT)
+    public ResponseEntity<Object> editarLocal(@PathVariable (value = "clienteId") UUID clienteId, @PathVariable(value = "localId") UUID localId,
+                                              @RequestBody LocalDto localDto) {
+
+        log.error("clienteId: {}", clienteId);
+        log.error("localId: {}", localId);
+
+        var clienteModelOptional = clienteService.findById(clienteId);
+        if(!clienteModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Cliente não encontrado!");
+        }
+
+        var localModelOptional = localService.findById(localId);
+        if(!localModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Local não encontrado!");
+        }
+
+        if(!localModelOptional.get().getCliente().getClienteId().equals(clienteModelOptional.get().getClienteId())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Local não pertence ao cliente selecionado!");
+        }
+
+        BeanUtils.copyProperties(localDto, localModelOptional.get());
+        localModelOptional.get().setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+
+        localService.save(localModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(localModelOptional.get());
+    }
+}

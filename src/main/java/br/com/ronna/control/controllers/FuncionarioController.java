@@ -66,20 +66,15 @@ public class FuncionarioController {
         Optional<FuncionarioModel> funcionarioModelOptional = funcionarioService.findById(funcionarioId);
         if(!funcionarioModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado!");
-        } else {
-            FuncionarioModel funcionarioModel = funcionarioModelOptional.get();
-            BeanUtils.copyProperties(funcionarioDto, funcionarioModel);
-
-            funcionarioModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("UTC")));
-            funcionarioService.save(funcionarioModel);
         }
 
-        FuncionarioModel funcionarioModel = new FuncionarioModel();
+        FuncionarioModel funcionarioModel = funcionarioModelOptional.get();
         BeanUtils.copyProperties(funcionarioDto, funcionarioModel);
 
-        funcionarioModel.setFuncionarioStatus(FuncionarioStatus.ATIVO);
-        funcionarioModel.setCreatedDate(LocalDateTime.now(ZoneId.of("UTC")));
         funcionarioModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("UTC")));
+        funcionarioModel.setFuncionarioStatus(FuncionarioStatus.ATIVO);
+        funcionarioService.save(funcionarioModel);
+
 
         return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioModel);
 

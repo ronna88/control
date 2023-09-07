@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -46,7 +47,7 @@ public class ClienteModel {
 
     @Column(nullable = false)
     private String clienteCEP;
-
+    
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ClienteStatus clienteStatus;
