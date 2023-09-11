@@ -6,6 +6,7 @@ import br.com.ronna.control.models.FuncionarioModel;
 import br.com.ronna.control.models.VisitaModel;
 import br.com.ronna.control.services.ClienteService;
 import br.com.ronna.control.services.FuncionarioService;
+import br.com.ronna.control.services.LocalService;
 import br.com.ronna.control.services.VisitaService;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
@@ -37,6 +38,9 @@ public class VisitaController {
     @Autowired
     FuncionarioService funcionarioService;
 
+    @Autowired
+    LocalService localService;
+
     @GetMapping
     public ResponseEntity<List<VisitaModel>> listaTodasVisitas() {
         log.debug("Listando todas as visitas...");
@@ -63,8 +67,6 @@ public class VisitaController {
     }
 
 
-
-
     @PostMapping("/novo")
     public ResponseEntity<Object> criarVisita(@RequestBody VisitaDto visitaDto) {
         var visitaModel = new VisitaModel();
@@ -74,8 +76,12 @@ public class VisitaController {
         if(!clienteModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Cliente não encontrado!");
         }
-
         visitaModel.setCliente(clienteModelOptional.get());
+
+        var localModelOptional = localService.findById(visitaDto.getLocal());
+        if(localModelOptional.isPresent()) {
+            visitaModel.setLocal(localModelOptional.get());
+        }
 
         Set<FuncionarioModel> funcTemp = new HashSet<>();
         visitaDto.getFuncionarios().forEach(f -> {
@@ -84,6 +90,7 @@ public class VisitaController {
                 funcTemp.add(f);
             }
         });
+        visitaModel.setVisitaRemoto(visitaDto.isVisitaRemoto());
         visitaModel.setFuncionarios(funcTemp);
         visitaModel.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         visitaModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
@@ -93,7 +100,7 @@ public class VisitaController {
     }
 
     @PutMapping("/{visitaId}")
-    public ResponseEntity<Object> criarVisita(@RequestBody VisitaDto visitaDto, @PathVariable(value = "visitaId") UUID visitaId) {
+    public ResponseEntity<Object> editarVisita(@RequestBody VisitaDto visitaDto, @PathVariable(value = "visitaId") UUID visitaId) {
         var visitaModelOptional = visitaService.findById(visitaId);
         if(!visitaModelOptional.isPresent()) {
             log.debug("Erro: Visita com id {} não encontrada!", visitaId);
@@ -106,6 +113,11 @@ public class VisitaController {
         var clienteModel = clienteService.findById(visitaDto.getCliente());
         visitaModelOptional.get().setCliente(clienteModel.get());
 
+        var localModelOptional = localService.findById(visitaDto.getLocal());
+        if(localModelOptional.isPresent()) {
+            visitaModelOptional.get().setLocal(localModelOptional.get());
+        }
+
         Set<FuncionarioModel> funcTemp = new HashSet<>();
         visitaDto.getFuncionarios().forEach(f -> {
             var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionariosId());
@@ -114,6 +126,8 @@ public class VisitaController {
             }
         });
         visitaModelOptional.get().setFuncionarios(funcTemp);
+
+        visitaModelOptional.get().setVisitaRemoto(visitaDto.isVisitaRemoto());
 
         visitaModelOptional.get().setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 

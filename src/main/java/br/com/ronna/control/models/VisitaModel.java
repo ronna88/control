@@ -49,6 +49,9 @@ public class VisitaModel {
     private Double visitaTotalAbono;
 
     @Column(nullable = false)
+    private boolean visitaRemoto;
+
+    @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime createdDate;
 
