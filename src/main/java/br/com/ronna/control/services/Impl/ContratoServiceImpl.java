@@ -4,6 +4,8 @@ import br.com.ronna.control.models.ContratoModel;
 import br.com.ronna.control.repositories.ContratoRepository;
 import br.com.ronna.control.services.ContratoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +36,11 @@ public class ContratoServiceImpl implements ContratoService {
     @Override
     public void save(ContratoModel contratoModel) {
         contratoRepository.save(contratoModel);
+    }
+
+    @Override
+    public Page<ContratoModel> findAll(Pageable pageable) {
+        return contratoRepository.findAll(pageable);
     }
 
 }

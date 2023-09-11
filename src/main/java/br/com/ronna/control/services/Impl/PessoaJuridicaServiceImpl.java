@@ -1,10 +1,13 @@
 package br.com.ronna.control.services.Impl;
 
 import br.com.ronna.control.models.ClienteModel;
+import br.com.ronna.control.models.EmpresaModel;
 import br.com.ronna.control.models.PessoaJuridicaModel;
 import br.com.ronna.control.repositories.PessoaJuridicaRepository;
 import br.com.ronna.control.services.PessoaJuridicaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,5 +55,15 @@ public class PessoaJuridicaServiceImpl implements PessoaJuridicaService {
     @Override
     public List<PessoaJuridicaModel> findAllByEmpresaId(UUID empresaId) {
         return pessoaJuridicaRepository.findAllPessoasJuridicasIntoEmpresa(empresaId);
+    }
+
+    @Override
+    public Page<PessoaJuridicaModel> findAll(Pageable pageable) {
+        return pessoaJuridicaRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<PessoaJuridicaModel> findAllByEmpresaId(EmpresaModel empresaModel, Pageable pageable) {
+        return pessoaJuridicaRepository.findPessoaJuridicaModelsByEmpresa(empresaModel, pageable);
     }
 }

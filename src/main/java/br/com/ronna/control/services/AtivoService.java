@@ -2,6 +2,8 @@ package br.com.ronna.control.services;
 
 import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.models.EmpresaModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,6 @@ public interface AtivoService {
 
     void save(AtivoModel ativoModel);
 
-    //List<AtivoModel> findAllByContratoContratoId(UUID contratoId);
+    Page<AtivoModel> findAll(Pageable pageable);
 
 }

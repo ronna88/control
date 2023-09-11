@@ -7,6 +7,10 @@ import br.com.ronna.control.services.FuncionarioService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +31,11 @@ public class FuncionarioController {
     private FuncionarioService funcionarioService;
 
     @GetMapping
-    public ResponseEntity<List<FuncionarioModel>> buscarTodosFuncionarios(){
+    public ResponseEntity<Page<FuncionarioModel>> buscarTodosFuncionarios(@PageableDefault(page = 0, size = 10, sort = "funcionarioNome", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todos os funcionários...");
-        return ResponseEntity.status(HttpStatus.OK).body(funcionarioService.findAll());
+
+        Page<FuncionarioModel> funcionarioModelPage = funcionarioService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioModelPage);
     }
 
     @GetMapping("/{funcionarioId}")

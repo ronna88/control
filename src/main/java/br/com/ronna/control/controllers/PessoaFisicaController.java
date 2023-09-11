@@ -13,6 +13,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,11 +40,12 @@ public class PessoaFisicaController {
     private EmpresaService empresaService;
 
     @GetMapping
-    public ResponseEntity<List<PessoaFisicaModel>> buscarTodasClientesPJ(){
+    public ResponseEntity<Page<PessoaFisicaModel>> buscarTodasClientesPJ(@PageableDefault(page = 0, size = 10, sort = "clienteNome", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todos clientes PF...");
-        List<PessoaFisicaModel> listaClientePF = pessoaFisicaService.findAll();
+        //List<PessoaFisicaModel> listaClientePF = pessoaFisicaService.findAll();
 
-        return ResponseEntity.status(HttpStatus.OK).body(listaClientePF);
+        Page<PessoaFisicaModel> pessoaFisicaModelPage = pessoaFisicaService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaFisicaModelPage);
     }
 
     @GetMapping("empresa/{empresaId}")

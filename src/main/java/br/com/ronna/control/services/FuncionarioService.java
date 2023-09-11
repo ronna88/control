@@ -1,6 +1,8 @@
 package br.com.ronna.control.services;
 
 import br.com.ronna.control.models.FuncionarioModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +21,5 @@ public interface FuncionarioService {
     void delete(FuncionarioModel funcionarioModel);
 
 
+    Page<FuncionarioModel> findAll(Pageable pageable);
 }

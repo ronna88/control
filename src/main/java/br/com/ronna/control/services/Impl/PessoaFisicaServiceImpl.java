@@ -7,6 +7,8 @@ import br.com.ronna.control.repositories.PessoaJuridicaRepository;
 import br.com.ronna.control.services.PessoaFisicaService;
 import br.com.ronna.control.services.PessoaJuridicaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +51,11 @@ public class PessoaFisicaServiceImpl implements PessoaFisicaService {
     @Override
     public List<PessoaFisicaModel> findAllByEmpresaId(UUID empresaId) {
         return pessoaFisicaRepository.findAllPessoasFisicasIntoEmpresa(empresaId);
+    }
+
+    @Override
+    public Page<PessoaFisicaModel> findAll(Pageable pageable) {
+        return pessoaFisicaRepository.findAll(pageable);
     }
 
 }

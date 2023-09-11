@@ -8,6 +8,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,11 +32,13 @@ public class EmpresaController {
     private EmpresaService empresaService;
 
     @GetMapping
-    public ResponseEntity<List<EmpresaModel>> buscarTodasEmpresas(){
+    public ResponseEntity<Page<EmpresaModel>> buscarTodasEmpresas(@PageableDefault(page = 0, size = 10, sort = "empresaNome", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todas Empresas...");
-        List<EmpresaModel> listaEmpresas = empresaService.findAll();
+        //List<EmpresaModel> listaEmpresas = empresaService.findAll();
 
-        return ResponseEntity.status(HttpStatus.OK).body(listaEmpresas);
+        Page<EmpresaModel> empresaModelPage = empresaService.findAll(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(empresaModelPage);
     }
 
     @GetMapping("{empresaId}")

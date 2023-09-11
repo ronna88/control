@@ -8,6 +8,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +36,11 @@ public class ContratoController {
     ClienteService clienteService;
 
     @GetMapping()
-    public ResponseEntity<List<ContratoModel>> buscarTodosContratos(){
+    public ResponseEntity<Page<ContratoModel>> buscarTodosContratos(@PageableDefault(page = 0, size = 10, sort = "contratoId", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todos os contratos...");
-        return ResponseEntity.status(HttpStatus.OK).body(contratoService.findAll());
+
+        Page<ContratoModel> contratoModelPage = contratoService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(contratoModelPage);
     }
 
     @GetMapping("/{contratoId}")
@@ -84,28 +90,12 @@ public class ContratoController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente não pode estar em branco!");
         }
 
-
-
         contratoModel.setContratoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
 
         contratoService.save(contratoModel);
         log.debug("POST criarContrato contratoModel salvo {}", contratoModel.toString());
         log.info("Contrato criado com sucesso contratoId {}", contratoModel.getContratoId());
-
-
-        /*
-        if(!contratoDto.getListaAtivos().isEmpty()) {
-            contratoDto.getListaAtivos().forEach(ativoModelDto -> {
-                var ativoModelOptional = ativoService.findById(ativoModelDto.getAtivoId());
-                if(ativoModelOptional.isPresent()) {
-                    //ativoModelOptional.get().setContrato(contratoModel);
-                    ativoService.save(ativoModelOptional.get());
-                }
-            });
-        } else {
-            log.warn("Sem ativos selecionados na criação do contrato!");
-        }*/
 
         return ResponseEntity.status(HttpStatus.CREATED).body(contratoModel);
     }

@@ -4,6 +4,8 @@ import br.com.ronna.control.models.EmpresaModel;
 import br.com.ronna.control.repositories.EmpresaRepository;
 import br.com.ronna.control.services.EmpresaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,5 +48,10 @@ public class EmpresaServiceImpl implements EmpresaService {
     @Override
     public boolean existsByEmpresaInscricaoEstadual(String empresaInscricaoEstadual) {
         return empresaRepository.existsByEmpresaInscricaoEstadual(empresaInscricaoEstadual);
+    }
+
+    @Override
+    public Page<EmpresaModel> findAll(Pageable pageable) {
+        return empresaRepository.findAll(pageable);
     }
 }

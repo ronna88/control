@@ -23,7 +23,9 @@ public interface VisitaService {
 
     List<VisitaModel> listarVisitasPorClienteLocalEPeriodo(UUID clienteId, UUID localId, LocalDateTime periodoInicio, LocalDateTime periodoFinal);
 
-    Page<VisitaModel> listarVisitasPorClienteEPeriodo(ClienteModel clienteId, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
+    Page<VisitaModel> listarVisitasPorClienteEPeriodo(ClienteModel clienteModel, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
 
     Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(ClienteModel clienteModel, LocalModel localModel,  LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
+
+    Page<VisitaModel> findAll(Pageable pageable);
 }

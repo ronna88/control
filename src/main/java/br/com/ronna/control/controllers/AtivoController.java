@@ -9,6 +9,10 @@ import lombok.var;
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +36,11 @@ public class AtivoController {
     ContratoService contratoService;
 
     @GetMapping()
-    public ResponseEntity<List<AtivoModel>> buscarTodosAtivos(){
+    public ResponseEntity<Page<AtivoModel>> buscarTodosAtivos(@PageableDefault(page = 0, size = 100, sort = "ativoDescricao", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todos os ativos...");
-        return ResponseEntity.status(HttpStatus.OK).body(ativoService.findAll());
+        Page<AtivoModel> ativoModelPage = ativoService.findAll(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ativoModelPage);
     }
 
     @GetMapping("/{ativoId}")
@@ -48,15 +54,6 @@ public class AtivoController {
             return ResponseEntity.status(HttpStatus.OK).body(ativoModelOptional.get());
         }
     }
-/*
-    @GetMapping("/contrato/{contratoId}")
-    public ResponseEntity<Object> buscarAtivoPorContrato(@PathVariable (value = "contratoId")UUID contratoId){
-        log.debug("Buscando ativos contratoUUID: {}", contratoId);
-        List<AtivoModel> ativoModelList = ativoService.findAllByContratoContratoId(contratoId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(ativoModelList);
-
-    }*/
 
     @PostMapping("/novo")
     public ResponseEntity<Object> criarAtivo(@RequestBody AtivoDto ativoDto) {
@@ -65,16 +62,6 @@ public class AtivoController {
         var ativoModel = new AtivoModel();
         BeanUtils.copyProperties(ativoDto, ativoModel);
 
-        /*
-        if(ativoDto.getAtivoContrato() != null) {
-            var contratoModel = contratoService.findById(ativoDto.getAtivoContrato());
-            if(contratoModel.isPresent()) {
-                ativoModel.setContrato(contratoModel.get());
-            } else {
-                ativoModel.setContrato(null);
-            }
-        }
-        */
 
         ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));

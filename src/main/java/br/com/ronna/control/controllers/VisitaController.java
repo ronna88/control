@@ -12,6 +12,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,9 +46,11 @@ public class VisitaController {
     LocalService localService;
 
     @GetMapping
-    public ResponseEntity<List<VisitaModel>> listaTodasVisitas() {
+    public ResponseEntity<Page<VisitaModel>> listaTodasVisitas(@PageableDefault(page = 0, size = 100, sort = "visitaIncio", direction = Sort.Direction.ASC)Pageable pageable) {
         log.debug("Listando todas as visitas...");
-        return ResponseEntity.status(HttpStatus.OK).body(visitaService.buscaTodasVisitas());
+
+        Page<VisitaModel> visitaModelPage = visitaService.findAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(visitaModelPage);
     }
 
     @GetMapping("/{visitaId}")
@@ -59,11 +65,17 @@ public class VisitaController {
     }
 
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<Object> listarVisitasPorClienteEPeriodo(@PathVariable (value = "clienteId") UUID clienteId, @RequestBody PeriodoDto periodoDto) {
-        log.error(clienteId);
-        log.error(periodoDto.getPeriodoInicio());
-        log.error(periodoDto.getPeriodoFinal());
-        return ResponseEntity.status(HttpStatus.OK).body(visitaService.listarVisitasPorClienteEPeriodo(clienteId, periodoDto.getPeriodoInicio(), periodoDto.getPeriodoFinal()));
+    public ResponseEntity<Object> listarVisitasPorClienteEPeriodo(@PathVariable (value = "clienteId") UUID clienteId, @RequestBody PeriodoDto periodoDto,
+                                                                  @PageableDefault(page = 0, size = 100, sort = "visitaInicio", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        var clienteModelOptional = clienteService.findById(clienteId);
+        if(!clienteModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Cliente selecionado não encontrado!");
+        }
+
+        Page<VisitaModel> visitaModelPage = visitaService.listarVisitasPorClienteEPeriodo(clienteModelOptional.get(), periodoDto.getPeriodoInicio(), periodoDto.getPeriodoFinal(), pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(visitaModelPage);
+        //return ResponseEntity.status(HttpStatus.OK).body(visitaService.listarVisitasPorClienteEPeriodo(clienteId, periodoDto.getPeriodoInicio(), periodoDto.getPeriodoFinal()));
     }
 
 

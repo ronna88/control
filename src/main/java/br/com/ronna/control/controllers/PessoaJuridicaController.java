@@ -10,6 +10,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,19 +37,28 @@ public class PessoaJuridicaController {
     private EmpresaService empresaService;
 
     @GetMapping
-    public ResponseEntity<List<PessoaJuridicaModel>> buscarTodasClientesPJ(){
+    public ResponseEntity<Page<PessoaJuridicaModel>> buscarTodasClientesPJ(@PageableDefault(page = 0, size = 10, sort = "clienteNome", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todos clientes PJ...");
-        List<PessoaJuridicaModel> listaClientePJ = pessoaJuridicaService.findAll();
 
-        return ResponseEntity.status(HttpStatus.OK).body(listaClientePJ);
+        Page<PessoaJuridicaModel> pessoaJuridicaModelPage = pessoaJuridicaService.findAll(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaJuridicaModelPage);
     }
 
     @GetMapping("empresa/{empresaId}")
-    public ResponseEntity<List<PessoaJuridicaModel>> buscarTodosClientesPJPorEmpresa(@PathVariable(value = "empresaId") UUID empresaId){
+    public ResponseEntity<Object> buscarTodosClientesPJPorEmpresa(@PathVariable(value = "empresaId") UUID empresaId,
+                                                                                     @PageableDefault(page = 0, size = 10, sort = "clienteNome", direction = Sort.Direction.ASC) Pageable pageable){
         log.debug("Listando todos clientes PJ da empresa {}...", empresaId);
-        List<PessoaJuridicaModel> listaClientePJ = pessoaJuridicaService.findAllByEmpresaId(empresaId);
+        //List<PessoaJuridicaModel> listaClientePJ = pessoaJuridicaService.findAllByEmpresaId(empresaId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(listaClientePJ);
+        var empresaModelOptional = empresaService.findById(empresaId);
+        if(!empresaModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Empresa selecionada não encontrada!");
+        }
+
+        Page<PessoaJuridicaModel> pessoaJuridicaModelPage = pessoaJuridicaService.findAllByEmpresaId(empresaModelOptional.get(), pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaJuridicaModelPage);
     }
 
     @GetMapping("{clienteId}")

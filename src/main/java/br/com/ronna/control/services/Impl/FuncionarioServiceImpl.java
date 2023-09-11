@@ -4,6 +4,8 @@ import br.com.ronna.control.models.FuncionarioModel;
 import br.com.ronna.control.repositories.FuncionarioRepository;
 import br.com.ronna.control.services.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,5 +41,10 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     @Override
     public void delete(FuncionarioModel funcionarioModel) {
         funcionarioRepository.delete(funcionarioModel);
+    }
+
+    @Override
+    public Page<FuncionarioModel> findAll(Pageable pageable) {
+        return funcionarioRepository.findAll(pageable);
     }
 }

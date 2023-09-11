@@ -4,6 +4,8 @@ import br.com.ronna.control.models.LocalModel;
 import br.com.ronna.control.repositories.LocalRepository;
 import br.com.ronna.control.services.LocalService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +41,11 @@ public class LocalServiceImpl implements LocalService {
     @Override
     public List<LocalModel> findAllByClienteClienteId(UUID clienteId) {
         return localRepository.findAllByClienteClienteId(clienteId);
+    }
+
+    @Override
+    public Page<LocalModel> findAllByClienteClienteId(UUID clienteId, Pageable pageable) {
+        return localRepository.findAllByClienteClienteId(clienteId, pageable);
     }
 
 }

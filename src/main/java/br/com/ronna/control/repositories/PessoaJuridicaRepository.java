@@ -3,6 +3,8 @@ package br.com.ronna.control.repositories;
 import br.com.ronna.control.models.ClienteModel;
 import br.com.ronna.control.models.EmpresaModel;
 import br.com.ronna.control.models.PessoaJuridicaModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +20,6 @@ public interface PessoaJuridicaRepository extends JpaRepository<PessoaJuridicaMo
 
     @Query(value = "select * from tb_clientes where empresa_empresa_id = :empresaId", nativeQuery = true)
     List<PessoaJuridicaModel> findAllPessoasJuridicasIntoEmpresa(@Param("empresaId") UUID empresaId);
+
+    Page<PessoaJuridicaModel> findPessoaJuridicaModelsByEmpresa(EmpresaModel empresaModel, Pageable pageable);
 }

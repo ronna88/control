@@ -57,4 +57,9 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findVisitaModelByClienteAndLocalAndVisitaInicioAfterAndVisitaFinalBefore(clienteModel, localModel, periodoInicio, periodoFinal, pageable);
     }
 
+    @Override
+    public Page<VisitaModel> findAll(Pageable pageable) {
+        return visitaRepository.findAll(pageable);
+    }
+
 }

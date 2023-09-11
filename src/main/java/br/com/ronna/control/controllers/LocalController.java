@@ -8,6 +8,10 @@ import lombok.extern.log4j.Log4j2;
 import lombok.var;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +34,14 @@ public class LocalController {
     ClienteService clienteService;
 
     @GetMapping("/{clienteId}")
-    public ResponseEntity<Object> listaLocaisPorCliente(@PathVariable (value = "clienteId") UUID clienteId) {
+    public ResponseEntity<Object> listaLocaisPorCliente(@PathVariable (value = "clienteId") UUID clienteId, @PageableDefault(page = 0, size = 10, sort = "localNome", direction = Sort.Direction.ASC)Pageable pageable) {
         var clienteModelOptional = clienteService.findById(clienteId);
         if(!clienteModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Cliente não encontrado!");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(localService.findAllByClienteClienteId(clienteId));
+        Page<LocalModel> localModelPage = localService.findAllByClienteClienteId(clienteId, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(localModelPage);
     }
 
     @PostMapping("/{clienteId}")

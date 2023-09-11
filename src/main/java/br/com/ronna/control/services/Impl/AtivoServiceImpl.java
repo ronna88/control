@@ -4,6 +4,8 @@ import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.repositories.AtivoRepository;
 import br.com.ronna.control.services.AtivoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +39,9 @@ public class AtivoServiceImpl implements AtivoService {
         ativoRepository.save(ativoModel);
     }
 
-    /*@Override
-    public List<AtivoModel> findAllByContratoContratoId(UUID contratoId) {
-        return ativoRepository.findAllByContratoContratoId(contratoId);
-    }*/
+    @Override
+    public Page<AtivoModel> findAll(Pageable pageable) {
+        return ativoRepository.findAll(pageable);
+    }
+
 }

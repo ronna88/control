@@ -1,6 +1,8 @@
 package br.com.ronna.control.services;
 
 import br.com.ronna.control.models.PessoaFisicaModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,4 +21,6 @@ public interface PessoaFisicaService {
     boolean existsByClienteCPF(String clienteCPF);
 
     List<PessoaFisicaModel> findAllByEmpresaId(UUID empresaId);
+
+    Page<PessoaFisicaModel> findAll(Pageable pageable);
 }
