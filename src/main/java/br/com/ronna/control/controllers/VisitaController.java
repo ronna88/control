@@ -21,9 +21,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,7 +46,7 @@ public class VisitaController {
     LocalService localService;
 
     @GetMapping
-    public ResponseEntity<Page<VisitaModel>> listaTodasVisitas(@PageableDefault(page = 0, size = 100, sort = "visitaIncio", direction = Sort.Direction.ASC)Pageable pageable) {
+    public ResponseEntity<Page<VisitaModel>> listaTodasVisitas(@PageableDefault(page = 0, size = 100, sort = "visitaInicio", direction = Sort.Direction.ASC)Pageable pageable) {
         log.debug("Listando todas as visitas...");
 
         Page<VisitaModel> visitaModelPage = visitaService.findAll(pageable);
@@ -145,6 +145,21 @@ public class VisitaController {
 
         visitaService.save(visitaModelOptional.get());
         return ResponseEntity.status(HttpStatus.CREATED).body(visitaModelOptional.get());
+    }
+
+    // Mapeamento de endpoint para o fechamento.
+    @GetMapping("/clientelocal/{clienteLocalId}")
+    public ResponseEntity<Object> getVisitasPorClienteLocalEPeriodo(@PathVariable (value = "clienteLocalId") UUID clienteLocalId, @RequestBody PeriodoDto periodoDto,
+                                                                    @PageableDefault(page = 0, size = 100, sort = "visita_inicio", direction = Sort.Direction.ASC) Pageable pageable) {
+
+        // Validação do UUID do local recebido como parametro.
+        var clienteLocalModel = localService.findById(clienteLocalId);
+        if(!clienteLocalModel.isPresent()){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro: Local do Cliente selecionado não encontrado!");
+        }
+
+        Page<VisitaModel> visitaModelPage = visitaService.listarVisitasPorClienteLocalEPeriodo(clienteLocalId, periodoDto.getPeriodoInicio(), periodoDto.getPeriodoFinal(), pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(visitaModelPage);
     }
 
 }

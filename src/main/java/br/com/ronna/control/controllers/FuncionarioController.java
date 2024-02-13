@@ -58,8 +58,8 @@ public class FuncionarioController {
         BeanUtils.copyProperties(funcionarioDto, funcionarioModel);
 
         funcionarioModel.setFuncionarioStatus(FuncionarioStatus.ATIVO);
-        funcionarioModel.setCreatedDate(LocalDateTime.now(ZoneId.of("UTC")));
-        funcionarioModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("UTC")));
+        funcionarioModel.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        funcionarioModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         funcionarioService.save(funcionarioModel);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(funcionarioModel);
@@ -77,7 +77,7 @@ public class FuncionarioController {
         FuncionarioModel funcionarioModel = funcionarioModelOptional.get();
         BeanUtils.copyProperties(funcionarioDto, funcionarioModel);
 
-        funcionarioModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("UTC")));
+        funcionarioModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         funcionarioModel.setFuncionarioStatus(FuncionarioStatus.ATIVO);
         funcionarioService.save(funcionarioModel);
 

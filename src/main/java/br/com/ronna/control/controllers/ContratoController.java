@@ -90,8 +90,8 @@ public class ContratoController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente não pode estar em branco!");
         }
 
-        contratoModel.setContratoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
-        contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+        contratoModel.setContratoDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
         contratoService.save(contratoModel);
         log.debug("POST criarContrato contratoModel salvo {}", contratoModel.toString());
@@ -110,7 +110,7 @@ public class ContratoController {
         } else {
             var contratoModel = contratoModelOptional.get();
             BeanUtils.copyProperties(contratoDto, contratoModel);
-            contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+            contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             contratoService.save(contratoModel);
             return ResponseEntity.status(HttpStatus.OK).body(contratoModel);
         }

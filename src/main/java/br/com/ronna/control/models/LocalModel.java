@@ -33,4 +33,5 @@ public class LocalModel {
     @ManyToOne
     @JoinColumn(name="clienteId")
     private ClienteModel cliente;
+
 }

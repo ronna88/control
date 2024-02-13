@@ -93,8 +93,8 @@ public class PessoaFisicaController {
 
 
         clientePFModel.setClienteStatus(ClienteStatus.ATIVO);
-        clientePFModel.setClienteDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
-        clientePFModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+        clientePFModel.setClienteDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        clientePFModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         pessoaFisicaService.save(clientePFModel);
         log.debug("POST criarCliente clientePFModel salvo {}", clientePFModel.toString());
         log.info("Cliente criada com sucesso clienteId {}", clientePFModel.getClienteId());
@@ -111,7 +111,7 @@ public class PessoaFisicaController {
             var pessoaFisicaModel = pessoaFisicaModelOptional.get();
 
             BeanUtils.copyProperties(pessoaFisicaDto, pessoaFisicaModel);
-            pessoaFisicaModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+            pessoaFisicaModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
             if(pessoaFisicaDto.getEmpresa() != null) {
                 var empresaModelOptional = empresaService.findById(pessoaFisicaDto.getEmpresa());

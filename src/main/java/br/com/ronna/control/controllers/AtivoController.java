@@ -63,8 +63,8 @@ public class AtivoController {
         BeanUtils.copyProperties(ativoDto, ativoModel);
 
 
-        ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
-        ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+        ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
         ativoService.save(ativoModel);
         log.debug("POST criarAtivo ativoModel salvo {}", ativoModel.toString());
@@ -83,7 +83,7 @@ public class AtivoController {
         } else {
             var ativoModel = ativoModelOptional.get();
             BeanUtils.copyProperties(ativoDto, ativoModel);
-            ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+            ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             ativoService.save(ativoModel);
             return ResponseEntity.status(HttpStatus.OK).body(ativoModel);
         }

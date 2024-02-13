@@ -103,8 +103,8 @@ public class PessoaJuridicaController {
 
 
         clientePJModel.setClienteStatus(ClienteStatus.ATIVO);
-        clientePJModel.setClienteDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
-        clientePJModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+        clientePJModel.setClienteDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        clientePJModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         pessoaJuridicaService.save(clientePJModel);
         log.debug("POST criarCliente clientePJModel salvo {}", clientePJModel.toString());
         log.info("Cliente criada com sucesso clienteId {}", clientePJModel.getClienteId());
@@ -120,7 +120,7 @@ public class PessoaJuridicaController {
         } else {
             var pessoaJuridicaModel = pessoaJuridicaModelOptional.get();
             BeanUtils.copyProperties(pessoaJuridicaDto, pessoaJuridicaModel);
-            pessoaJuridicaModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("UTC")));
+            pessoaJuridicaModel.setClienteDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
             if(pessoaJuridicaDto.getEmpresa() != null) {
                 var empresaModelOptional = empresaService.findById(pessoaJuridicaDto.getEmpresa());

@@ -19,13 +19,13 @@ public interface VisitaService {
 
     void save(VisitaModel visitaModel);
 
-    List<VisitaModel> listarVisitasPorClienteEPeriodo(UUID clienteId, LocalDateTime periodoInicio, LocalDateTime periodoFinal);
+    // List<VisitaModel> listarVisitasPorClienteEPeriodo(UUID clienteId, LocalDateTime periodoInicio, LocalDateTime periodoFinal);
 
-    List<VisitaModel> listarVisitasPorClienteLocalEPeriodo(UUID clienteId, UUID localId, LocalDateTime periodoInicio, LocalDateTime periodoFinal);
+    Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(UUID localId, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
 
     Page<VisitaModel> listarVisitasPorClienteEPeriodo(ClienteModel clienteModel, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
 
-    Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(ClienteModel clienteModel, LocalModel localModel,  LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
+    // Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(ClienteModel clienteModel, LocalModel localModel,  LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable);
 
     Page<VisitaModel> findAll(Pageable pageable);
 }

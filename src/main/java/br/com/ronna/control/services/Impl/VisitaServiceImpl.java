@@ -36,14 +36,14 @@ public class VisitaServiceImpl implements VisitaService {
         visitaRepository.save(visitaModel);
     }
 
-    @Override
-    public List<VisitaModel> listarVisitasPorClienteEPeriodo(UUID clienteId, LocalDateTime periodoInicio, LocalDateTime periodoFinal) {
-        return visitaRepository.listarVisitasPorClienteEPeriodo(clienteId, periodoInicio, periodoFinal);
-    }
+    // @Override
+    // public List<VisitaModel> listarVisitasPorClienteEPeriodo(UUID clienteId, LocalDateTime periodoInicio, LocalDateTime periodoFinal) {
+    //     return visitaRepository.listarVisitasPorClienteEPeriodo(clienteId, periodoInicio, periodoFinal);
+    // }
 
     @Override
-    public List<VisitaModel> listarVisitasPorClienteLocalEPeriodo(UUID clienteId, UUID localId, LocalDateTime periodoInicio, LocalDateTime periodoFinal) {
-        return visitaRepository.listarVisitasPorClienteLocalEPeriodo(clienteId, localId, periodoInicio, periodoFinal);
+    public Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(UUID localId, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable) {
+        return visitaRepository.listarVisitasPorClienteLocalEPeriodo(localId, periodoInicio, periodoFinal, pageable);
     }
 
     @Override
@@ -52,10 +52,10 @@ public class VisitaServiceImpl implements VisitaService {
         return visitaRepository.findVisitaModelByClienteAndVisitaInicioAfterAndVisitaFinalBefore(clienteModel, periodoInicio, periodoFinal, pageable);
     }
 
-    @Override
-    public Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(ClienteModel clienteModel, LocalModel localModel, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable) {
-        return visitaRepository.findVisitaModelByClienteAndLocalAndVisitaInicioAfterAndVisitaFinalBefore(clienteModel, localModel, periodoInicio, periodoFinal, pageable);
-    }
+    // @Override
+    // public Page<VisitaModel> listarVisitasPorClienteLocalEPeriodo(ClienteModel clienteModel, LocalModel localModel, LocalDateTime periodoInicio, LocalDateTime periodoFinal, Pageable pageable) {
+    //     return visitaRepository.findVisitaModelByClienteAndLocalAndVisitaInicioAfterAndVisitaFinalBefore(clienteModel, localModel, periodoInicio, periodoFinal, pageable);
+    // }
 
     @Override
     public Page<VisitaModel> findAll(Pageable pageable) {
