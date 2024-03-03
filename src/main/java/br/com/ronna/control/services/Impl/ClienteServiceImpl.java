@@ -7,6 +7,8 @@ import br.com.ronna.control.repositories.PessoaJuridicaRepository;
 import br.com.ronna.control.services.ClienteService;
 import br.com.ronna.control.services.PessoaJuridicaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +22,8 @@ public class ClienteServiceImpl implements ClienteService {
     private ClienteRepository clienteRepository;
 
     @Override
-    public List<ClienteModel> findAll() {
-        return clienteRepository.findAll();
+    public Page<ClienteModel> findAll(Pageable pageable) {
+        return clienteRepository.findAll(pageable);
     }
 
     @Override

@@ -8,9 +8,10 @@ import java.time.temporal.ChronoUnit;
 @Log4j2
 public class CalculoHoras {
     
-    public Double diferencaHoras(LocalDateTime dataFinal, LocalDateTime dataInicial) {
+    // Retorna o total de tempo em minutos
+    public Double diferencaHoras(LocalDateTime inicio, LocalDateTime fim, Double totalAbono) {
         
-        log.info("UNTIL: " + Double.valueOf(dataInicial.until(dataFinal, ChronoUnit.MINUTES)) / 60);
-        return Double.valueOf(dataInicial.until(dataFinal, ChronoUnit.MINUTES)) / 60;
+        log.info("UNTIL: " + Double.valueOf(inicio.until(fim, ChronoUnit.MINUTES)) / 60);
+        return (Double.valueOf( inicio.until(fim, ChronoUnit.MINUTES)) - totalAbono)/ 60;
     }
 }

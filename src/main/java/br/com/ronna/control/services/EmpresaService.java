@@ -23,4 +23,5 @@ public interface EmpresaService {
     boolean existsByEmpresaInscricaoEstadual(String empresaInscricaoEstadual);
 
     Page<EmpresaModel> findAll(Pageable pageable);
+
 }

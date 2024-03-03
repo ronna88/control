@@ -1,5 +1,6 @@
 package br.com.ronna.control.services;
 
+import br.com.ronna.control.models.ClienteModel;
 import br.com.ronna.control.models.ContratoModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,8 @@ public interface ContratoService {
     void save(ContratoModel contratoModel);
 
     Page<ContratoModel> findAll(Pageable pageable);
+
+    Boolean existsContratoModelByCliente(ClienteModel clienteId);
+
+    boolean findByIdAndCliente(UUID contratoId, UUID clienteId);
 }

@@ -1,5 +1,6 @@
 package br.com.ronna.control.models;
 
+import br.com.ronna.control.enums.AtivoStatus;
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -27,6 +28,10 @@ public class AtivoModel {
 
     @Column(nullable = false)
     private double ativoValorLocacao;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AtivoStatus ativoStatus;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")

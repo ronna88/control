@@ -1,6 +1,7 @@
 package br.com.ronna.control.controllers;
 
 import br.com.ronna.control.dtos.AtivoDto;
+import br.com.ronna.control.enums.AtivoStatus;
 import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.services.AtivoService;
 import br.com.ronna.control.services.ContratoService;
@@ -65,12 +66,24 @@ public class AtivoController {
 
         ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        ativoModel.setAtivoStatus(AtivoStatus.ATIVO);
 
         ativoService.save(ativoModel);
         log.debug("POST criarAtivo ativoModel salvo {}", ativoModel.toString());
         log.info("Ativo criado com sucesso ativoId {}", ativoModel.getAtivoId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ativoModel);
+    }
+
+    @DeleteMapping("/{ativoId}")
+    public ResponseEntity<Object> deletarAtivo(@PathVariable (value="ativoId") UUID ativoId) {
+        Optional<AtivoModel> ativoModelOptional = ativoService.findById(ativoId);
+        if(!ativoModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ativo não encontrado!");
+        }
+        ativoModelOptional.get().setAtivoStatus(AtivoStatus.DESATIVO);
+        ativoService.save(ativoModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(ativoModelOptional.get());
     }
 
     @PutMapping("/{ativoId}")
@@ -84,6 +97,7 @@ public class AtivoController {
             var ativoModel = ativoModelOptional.get();
             BeanUtils.copyProperties(ativoDto, ativoModel);
             ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+            ativoModel.setAtivoStatus(AtivoStatus.ATIVO);
             ativoService.save(ativoModel);
             return ResponseEntity.status(HttpStatus.OK).body(ativoModel);
         }

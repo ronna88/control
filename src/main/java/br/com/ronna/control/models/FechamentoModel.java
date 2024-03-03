@@ -17,28 +17,25 @@ import java.util.UUID;
 public class FechamentoModel {
     
     @Id
+    @Column(columnDefinition = "varbinary(36)")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(columnDefinition = "varbinary(36")
     private UUID fechamentoId;
-    
+
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime fechamentoInicio;
     
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime fechamentoFinal;
-    
-    @ManyToOne
-    @JoinColumn(name = "clienteId")
-    private LocalModel clienteLocal;
-    
-    @OneToMany(mappedBy="fechamento")
+
+    private Double fechamentoValorServicos;
+
+    private Double fechamentoValorProdutos;
+
+    @OneToOne
+    private LocalModel local;
+
+    @OneToMany
     private Set<VisitaModel> visitas;
-    
-    private Double valorProdutos;
-    
-    private Double valorServicos;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -21,4 +21,7 @@ public interface AtivoService {
 
     Page<AtivoModel> findAll(Pageable pageable);
 
+    boolean ativoHasContrato(UUID ativoId);
+
+    boolean ativoInContrato(UUID ativoId, UUID contratoId);
 }

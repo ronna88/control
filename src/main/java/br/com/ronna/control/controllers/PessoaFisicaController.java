@@ -101,6 +101,18 @@ public class PessoaFisicaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientePFModel);
     }
 
+    @DeleteMapping("{clienteId}")
+    public ResponseEntity<Object> deletarCliente(@PathVariable(value = "clienteId") UUID clienteId) {
+        log.debug("Deletar cliente PF...");
+        Optional<PessoaFisicaModel> pessoaFisicaModelOptional = pessoaFisicaService.findById(clienteId);
+        if(!pessoaFisicaModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
+        }
+        pessoaFisicaModelOptional.get().setClienteStatus(ClienteStatus.DESATIVO);
+        pessoaFisicaService.save(pessoaFisicaModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaFisicaModelOptional.get());
+    }
+
     @PutMapping("{clienteId}")
     public ResponseEntity<Object> editarCliente(@PathVariable( value = "clienteId") UUID clienteId, @RequestBody PessoaFisicaDto pessoaFisicaDto) {
         log.debug("Edição de cliente...");
@@ -123,6 +135,7 @@ public class PessoaFisicaController {
             } else {
                 pessoaFisicaModel.setEmpresa(pessoaFisicaModel.getEmpresa());
             }
+            pessoaFisicaModel.setClienteStatus(ClienteStatus.ATIVO);
 
             pessoaFisicaService.save(pessoaFisicaModel);
 

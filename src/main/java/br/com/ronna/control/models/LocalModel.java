@@ -1,5 +1,6 @@
 package br.com.ronna.control.models;
 
+import br.com.ronna.control.enums.LocalStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -33,5 +34,8 @@ public class LocalModel {
     @ManyToOne
     @JoinColumn(name="clienteId")
     private ClienteModel cliente;
-
+    
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private LocalStatus localStatus;
 }

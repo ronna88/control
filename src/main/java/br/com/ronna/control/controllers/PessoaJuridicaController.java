@@ -111,6 +111,18 @@ public class PessoaJuridicaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientePJModel);
     }
 
+    @DeleteMapping("{clienteId}")
+    public ResponseEntity<Object> deleteCliente(@PathVariable(value = "clienteId") UUID clienteId) {
+        log.debug("Deletar Cliente PJ");
+        Optional<PessoaJuridicaModel> pessoaJuridicaModelOptional = pessoaJuridicaService.findById(clienteId);
+        if(!pessoaJuridicaModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente não encontrado");
+        }
+        pessoaJuridicaModelOptional.get().setClienteStatus(ClienteStatus.DESATIVO);
+        pessoaJuridicaService.save(pessoaJuridicaModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(pessoaJuridicaModelOptional.get());
+    }
+
     @PutMapping("{clienteId}")
     public ResponseEntity<Object> editarEmpresa(@PathVariable( value = "clienteId") UUID clienteId, @RequestBody PessoaJuridicaDto pessoaJuridicaDto) {
         log.debug("Edição de cliente...");
@@ -133,6 +145,7 @@ public class PessoaJuridicaController {
                 pessoaJuridicaModel.setEmpresa(pessoaJuridicaModel.getEmpresa());
             }
 
+            pessoaJuridicaModel.setClienteStatus(ClienteStatus.ATIVO);
             pessoaJuridicaService.save(pessoaJuridicaModel);
 
             log.debug("PUT editarCliente pessoaJuridicaModel salvo {}", pessoaJuridicaModel.toString());

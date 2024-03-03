@@ -42,16 +42,15 @@ public class VisitaModel {
     @JoinColumn(name = "localId")
     private LocalModel local;
 
-    @ManyToOne
-    @JoinColumn(name = "fechamentoId")
-    private FechamentoModel fechamento;
-
     private Double visitaValorProdutos;
 
     private Double visitaTotalAbono;
 
     @Column(nullable = false)
     private boolean visitaRemoto;
+
+    @ManyToOne
+    private FechamentoModel fechamento;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")

@@ -1,6 +1,7 @@
 package br.com.ronna.control.controllers;
 
 import br.com.ronna.control.dtos.LocalDto;
+import br.com.ronna.control.enums.LocalStatus;
 import br.com.ronna.control.models.LocalModel;
 import br.com.ronna.control.services.ClienteService;
 import br.com.ronna.control.services.LocalService;
@@ -55,12 +56,28 @@ public class LocalController {
         BeanUtils.copyProperties(localDto, localModel);
 
         localModel.setCliente(clienteModelOptional.get());
+        localModel.setLocalStatus(LocalStatus.ATIVO);
 
         localModel.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         localModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
         localService.save(localModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(localModel);
+    }
+
+    @DeleteMapping("/{clienteId}/{localId}")
+    public ResponseEntity<Object> deleteLocal(@PathVariable(value = "clienteId") UUID clienteId, @PathVariable(value = "localId") UUID localId) {
+        var clienteModelOptional = clienteService.findById(clienteId);
+        if(!clienteModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Cliente não encontrado!");
+        }
+        var localModelOptional = localService.findById(localId);
+        if(!localModelOptional.isPresent()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Local não encontrado!");
+        }
+        localModelOptional.get().setLocalStatus(LocalStatus.DESATIVO);
+        localService.save(localModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Local deletado com sucesso!");
     }
 
     @RequestMapping(value = "/{clienteId}/{localId}", method = RequestMethod.PUT)
@@ -86,7 +103,7 @@ public class LocalController {
 
         BeanUtils.copyProperties(localDto, localModelOptional.get());
         localModelOptional.get().setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
-
+        localModelOptional.get().setLocalStatus(LocalStatus.ATIVO);
         localService.save(localModelOptional.get());
         return ResponseEntity.status(HttpStatus.OK).body(localModelOptional.get());
     }

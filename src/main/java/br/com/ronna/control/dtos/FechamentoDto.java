@@ -19,10 +19,8 @@ public class FechamentoDto {
     
     private Set<VisitaModel> visitas;
     
-    private Double valorProdutos;
+    private Double fechamentoValorProdutos;
     
-    private Double valorServicos;
-    
-    private FechamentoStatus fechamentoStatus;
+    private Double fechamentoValorServicos;
     
 }

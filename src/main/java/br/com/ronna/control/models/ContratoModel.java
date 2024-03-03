@@ -1,5 +1,6 @@
 package br.com.ronna.control.models;
 
+import br.com.ronna.control.enums.ContratoStatus;
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
@@ -40,10 +41,15 @@ public class ContratoModel {
     private ClienteModel cliente;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ContratoStatus contratoStatus;
+
+    @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime contratoDataCriacao;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime contratoDataAtualizacao;
+
 }

@@ -1,5 +1,6 @@
 package br.com.ronna.control.services.Impl;
 
+import br.com.ronna.control.models.ClienteModel;
 import br.com.ronna.control.models.ContratoModel;
 import br.com.ronna.control.repositories.ContratoRepository;
 import br.com.ronna.control.services.ContratoService;
@@ -41,6 +42,16 @@ public class ContratoServiceImpl implements ContratoService {
     @Override
     public Page<ContratoModel> findAll(Pageable pageable) {
         return contratoRepository.findAll(pageable);
+    }
+
+    @Override
+    public Boolean existsContratoModelByCliente(ClienteModel cliente) {
+        return contratoRepository.existsContratoModelByCliente(cliente);
+    }
+
+    @Override
+    public boolean findByIdAndCliente(UUID contratoId, UUID clienteId) {
+        return contratoRepository.findByContratoIdAndCliente(contratoId, clienteId);
     }
 
 }

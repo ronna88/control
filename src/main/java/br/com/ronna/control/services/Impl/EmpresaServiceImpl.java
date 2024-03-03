@@ -54,4 +54,6 @@ public class EmpresaServiceImpl implements EmpresaService {
     public Page<EmpresaModel> findAll(Pageable pageable) {
         return empresaRepository.findAll(pageable);
     }
+
+
 }

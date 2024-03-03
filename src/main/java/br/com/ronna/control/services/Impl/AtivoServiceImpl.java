@@ -44,4 +44,14 @@ public class AtivoServiceImpl implements AtivoService {
         return ativoRepository.findAll(pageable);
     }
 
+    @Override
+    public boolean ativoHasContrato(UUID ativoId) {
+        return ativoRepository.ativoHasContrato(ativoId);
+    }
+
+    @Override
+    public boolean ativoInContrato(UUID ativoId, UUID contratoId) {
+        return ativoRepository.ativoInContrato(ativoId, contratoId);
+    }
+
 }

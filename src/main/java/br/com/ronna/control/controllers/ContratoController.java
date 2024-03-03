@@ -1,6 +1,7 @@
 package br.com.ronna.control.controllers;
 
 import br.com.ronna.control.dtos.ContratoDto;
+import br.com.ronna.control.enums.ContratoStatus;
 import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.models.ContratoModel;
 import br.com.ronna.control.services.*;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @Log4j2
@@ -34,6 +36,8 @@ public class ContratoController {
 
     @Autowired
     ClienteService clienteService;
+
+    //TODO: ajustar verificação para não tentar colocar mias de um contrato no mesmo cliente. e nao deixar colocar o mesmo ativos em dois contratos.
 
     @GetMapping()
     public ResponseEntity<Page<ContratoModel>> buscarTodosContratos(@PageableDefault(page = 0, size = 10, sort = "contratoId", direction = Sort.Direction.ASC)Pageable pageable){
@@ -66,13 +70,22 @@ public class ContratoController {
         contratoModel.setContratoValorVisita(contratoDto.getContratoValorVisita());
 
         Set<AtivoModel> ativoTemp = new HashSet<>();
+        AtomicBoolean ativoTeste = new AtomicBoolean(false);
         if(!contratoDto.getListaAtivos().isEmpty()) {
             contratoDto.getListaAtivos().forEach(ativoM -> {
                 var ativoModelOptional = ativoService.findById(ativoM.getAtivoId());
-                if(ativoModelOptional.isPresent()){
-                    ativoTemp.add(ativoModelOptional.get());
+                if(ativoService.ativoHasContrato(ativoM.getAtivoId())) {
+                   log.error("Error: ativo já está em um contrato");
+                   ativoTeste.set(true);
+                } else {
+                    if(ativoModelOptional.isPresent()){
+                        ativoTemp.add(ativoModelOptional.get());
+                    }
                 }
             });
+        }
+        if (ativoTeste.get()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: ativo já está em um contrato");
         }
 
         if(!ativoTemp.isEmpty()) {
@@ -83,21 +96,37 @@ public class ContratoController {
            var clienteModel = clienteService.findById(contratoDto.getCliente());
            log.warn("Erro: " + clienteModel.get());
            if(clienteModel.isPresent()) {
+               log.error(contratoService.existsContratoModelByCliente(clienteModel.get()));
+               if(contratoService.existsContratoModelByCliente(clienteModel.get())) {
+                   return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente já possui contrato ativo");
+               }
                contratoModel.setCliente(clienteModel.get());
            }
-
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente não pode estar em branco!");
         }
 
         contratoModel.setContratoDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        contratoModel.setContratoStatus(ContratoStatus.ATIVO);
 
         contratoService.save(contratoModel);
         log.debug("POST criarContrato contratoModel salvo {}", contratoModel.toString());
         log.info("Contrato criado com sucesso contratoId {}", contratoModel.getContratoId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(contratoModel);
+    }
+
+    @DeleteMapping("/{contratoId}")
+    public ResponseEntity<Object> deleteContrato(@PathVariable(value = "contratoId") UUID contratoId) {
+        Optional<ContratoModel> contratoModelOptional = contratoService.findById(contratoId);
+        if(!contratoModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contrato não encontrado!");
+        }
+        contratoModelOptional.get().setContratoStatus(ContratoStatus.DESATIVO);
+        contratoModelOptional.get().setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        contratoService.save(contratoModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(contratoModelOptional.get());
     }
 
     @PutMapping("/{contratoId}")
@@ -109,8 +138,63 @@ public class ContratoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Contrato não encontrado!");
         } else {
             var contratoModel = contratoModelOptional.get();
-            BeanUtils.copyProperties(contratoDto, contratoModel);
+            contratoModel.setContratoDescricao(contratoDto.getContratoDescricao());
+            contratoModel.setContratoValorRemoto(contratoDto.getContratoValorRemoto());
+            contratoModel.setContratoValorVisita(contratoDto.getContratoValorVisita());
+
+            //TODO: ao verificar se ativo já possui contrato, verificar se estamos somente deixando ele no
+            //TODO:
+            Set<AtivoModel> ativoTemp = new HashSet<>();
+            AtomicBoolean ativoTeste = new AtomicBoolean(false);
+            if(!contratoDto.getListaAtivos().isEmpty()) {
+                contratoDto.getListaAtivos().forEach(ativoM -> {
+                    var ativoModelOptional = ativoService.findById(ativoM.getAtivoId());
+                    if(ativoService.ativoInContrato(ativoM.getAtivoId(), contratoId)) {
+                        log.info("Ativo já está no contrato");
+                        ativoTemp.add(ativoModelOptional.get());
+                    } else {
+                        if(ativoService.ativoHasContrato(ativoM.getAtivoId())) {
+                            log.error("Error: ativo já está em um contrato");
+                            ativoTeste.set(true);
+                        } else {
+                            if(ativoModelOptional.isPresent()){
+                                ativoTemp.add(ativoModelOptional.get());
+                            }
+                        }
+                    }
+
+
+                });
+            }
+            if (ativoTeste.get()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: ativo já está em um contrato");
+            }
+
+            if(!ativoTemp.isEmpty()) {
+                contratoModel.setListaAtivos(ativoTemp);
+            }
+
+            if(contratoDto.getCliente() != null) {
+                var clienteModel = clienteService.findById(contratoDto.getCliente());
+                if(clienteModel.isPresent()) {
+                    if(contratoService.findByIdAndCliente(contratoId, clienteModel.get().getClienteId())) {
+                        log.info("Manutenção de cliente para o contrato.");
+                    } else {
+                        log.info("Troca de cliente para o contrato selecionado");
+                        if(contratoService.existsContratoModelByCliente(clienteModel.get())) {
+                            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente já possui contrato ativo");
+                        }
+                    }
+
+                    contratoModel.setCliente(clienteModel.get());
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente não pode estar em branco!");
+            }
+
+
             contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+            contratoModel.setContratoStatus(ContratoStatus.ATIVO);
             contratoService.save(contratoModel);
             return ResponseEntity.status(HttpStatus.OK).body(contratoModel);
         }

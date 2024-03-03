@@ -32,7 +32,8 @@ public class EmpresaController {
     private EmpresaService empresaService;
 
     @GetMapping
-    public ResponseEntity<Page<EmpresaModel>> buscarTodasEmpresas(@PageableDefault(page = 0, size = 10, sort = "empresaNome", direction = Sort.Direction.ASC)Pageable pageable){
+    public ResponseEntity<Page<EmpresaModel>> buscarTodasEmpresas(
+            @PageableDefault(page = 0, size = 10, sort = "empresaNomeFantasia", direction = Sort.Direction.ASC)Pageable pageable){
         log.debug("Listando todas Empresas...");
         //List<EmpresaModel> listaEmpresas = empresaService.findAll();
 
@@ -78,6 +79,19 @@ public class EmpresaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(empresaModel);
     }
 
+    @DeleteMapping("{empresaId}")
+    public ResponseEntity<Object> deleteEmpresa(@PathVariable(value = "empresaId") UUID empresaId) {
+        log.debug("Deletar empresa...");
+        Optional<EmpresaModel> empresaModelOptional = empresaService.findById(empresaId);
+        if(!empresaModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Empresa não encontrada");
+        } else {
+            empresaModelOptional.get().setEmpresaStatus(EmpresaStatus.DESATIVO);
+            empresaService.save(empresaModelOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Empresa deletada com sucesso!");
+        }
+    }
+
     @PutMapping("{empresaId}")
     public ResponseEntity<Object> editarEmpresa(@PathVariable( value = "empresaId") UUID empresaId, @RequestBody EmpresaDto empresaDto) {
         log.debug("Edição de empresa...");
@@ -93,7 +107,9 @@ public class EmpresaController {
             empresaModel.setEmpresaEmail(empresaDto.getEmpresaEmail());
             empresaModel.setEmpresaTelefone(empresaDto.getEmpresaTelefone());
             empresaModel.setDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+            empresaModel.setEmpresaStatus(EmpresaStatus.ATIVO);
             empresaService.save(empresaModel);
+            log.info("\n'asdasd'");
             log.debug("PUT editarEmpresa empresaModel salvo {}", empresaModel.toString());
             log.info("Empresa editada com sucesso empresaId {}", empresaModel.getEmpresaId());
             return ResponseEntity.status(HttpStatus.OK).body(empresaModel);
