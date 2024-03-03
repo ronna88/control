@@ -97,7 +97,7 @@ public class VisitaController {
 
         Set<FuncionarioModel> funcTemp = new HashSet<>();
         visitaDto.getFuncionarios().forEach(f -> {
-            var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionariosId());
+            var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionarioId());
             if(funcionarioModelOptinal.isPresent()){
                 funcTemp.add(f);
             }
@@ -132,7 +132,7 @@ public class VisitaController {
 
         Set<FuncionarioModel> funcTemp = new HashSet<>();
         visitaDto.getFuncionarios().forEach(f -> {
-            var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionariosId());
+            var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionarioId());
             if(funcionarioModelOptinal.isPresent()){
                 funcTemp.add(f);
             }

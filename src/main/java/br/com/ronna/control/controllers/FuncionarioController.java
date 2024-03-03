@@ -86,4 +86,16 @@ public class FuncionarioController {
 
     }
 
+    @DeleteMapping("/{funcionarioId}")
+    public ResponseEntity<Object> deleteFuncionario(@PathVariable(value = "funcionarioId") UUID funcionarioId) {
+        Optional<FuncionarioModel> funcionarioModelOptional = funcionarioService.findById(funcionarioId);
+        if(!funcionarioModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Funcionário não encontrado!");
+        }
+        funcionarioModelOptional.get().setFuncionarioStatus(FuncionarioStatus.DESATIVO);
+        funcionarioModelOptional.get().setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
+        funcionarioService.save(funcionarioModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body(funcionarioModelOptional.get());
+    }
+
 }
