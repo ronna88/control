@@ -2,12 +2,10 @@ package br.com.ronna.control.controllers;
 
 import br.com.ronna.control.dtos.ContratoDto;
 import br.com.ronna.control.enums.ContratoStatus;
-import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.models.ContratoModel;
 import br.com.ronna.control.services.*;
 import lombok.extern.log4j.Log4j2;
 import lombok.var;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +35,7 @@ public class ContratoController {
     @Autowired
     ClienteService clienteService;
 
-    //TODO: ajustar verificação para não tentar colocar mias de um contrato no mesmo cliente. e nao deixar colocar o mesmo ativos em dois contratos.
+    //TODO: ajustar verificação para não tentar colocar mais de um contrato no mesmo cliente.
 
     @GetMapping()
     public ResponseEntity<Page<ContratoModel>> buscarTodosContratos(@PageableDefault(page = 0, size = 10, sort = "contratoId", direction = Sort.Direction.ASC)Pageable pageable){
@@ -63,34 +61,10 @@ public class ContratoController {
     public ResponseEntity<Object> criarContrato(@RequestBody ContratoDto contratoDto) {
         log.info("Criação de contrato...");
 
-
         var contratoModel = new ContratoModel();
         contratoModel.setContratoDescricao(contratoDto.getContratoDescricao());
         contratoModel.setContratoValorRemoto(contratoDto.getContratoValorRemoto());
         contratoModel.setContratoValorVisita(contratoDto.getContratoValorVisita());
-
-        Set<AtivoModel> ativoTemp = new HashSet<>();
-        AtomicBoolean ativoTeste = new AtomicBoolean(false);
-        if(!contratoDto.getListaAtivos().isEmpty()) {
-            contratoDto.getListaAtivos().forEach(ativoM -> {
-                var ativoModelOptional = ativoService.findById(ativoM.getAtivoId());
-                if(ativoService.ativoHasContrato(ativoM.getAtivoId())) {
-                   log.error("Error: ativo já está em um contrato");
-                   ativoTeste.set(true);
-                } else {
-                    if(ativoModelOptional.isPresent()){
-                        ativoTemp.add(ativoModelOptional.get());
-                    }
-                }
-            });
-        }
-        if (ativoTeste.get()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: ativo já está em um contrato");
-        }
-
-        if(!ativoTemp.isEmpty()) {
-            contratoModel.setListaAtivos(ativoTemp);
-        }
 
         if(contratoDto.getCliente() != null) {
            var clienteModel = clienteService.findById(contratoDto.getCliente());
@@ -142,38 +116,6 @@ public class ContratoController {
             contratoModel.setContratoValorRemoto(contratoDto.getContratoValorRemoto());
             contratoModel.setContratoValorVisita(contratoDto.getContratoValorVisita());
 
-            //TODO: ao verificar se ativo já possui contrato, verificar se estamos somente deixando ele no
-            //TODO:
-            Set<AtivoModel> ativoTemp = new HashSet<>();
-            AtomicBoolean ativoTeste = new AtomicBoolean(false);
-            if(!contratoDto.getListaAtivos().isEmpty()) {
-                contratoDto.getListaAtivos().forEach(ativoM -> {
-                    var ativoModelOptional = ativoService.findById(ativoM.getAtivoId());
-                    if(ativoService.ativoInContrato(ativoM.getAtivoId(), contratoId)) {
-                        log.info("Ativo já está no contrato");
-                        ativoTemp.add(ativoModelOptional.get());
-                    } else {
-                        if(ativoService.ativoHasContrato(ativoM.getAtivoId())) {
-                            log.error("Error: ativo já está em um contrato");
-                            ativoTeste.set(true);
-                        } else {
-                            if(ativoModelOptional.isPresent()){
-                                ativoTemp.add(ativoModelOptional.get());
-                            }
-                        }
-                    }
-
-
-                });
-            }
-            if (ativoTeste.get()) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: ativo já está em um contrato");
-            }
-
-            if(!ativoTemp.isEmpty()) {
-                contratoModel.setListaAtivos(ativoTemp);
-            }
-
             if(contratoDto.getCliente() != null) {
                 var clienteModel = clienteService.findById(contratoDto.getCliente());
                 if(clienteModel.isPresent()) {
@@ -191,7 +133,6 @@ public class ContratoController {
             } else {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Cliente não pode estar em branco!");
             }
-
 
             contratoModel.setContratoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
             contratoModel.setContratoStatus(ContratoStatus.ATIVO);

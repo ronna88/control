@@ -13,4 +13,6 @@ public class AtivoDto {
 
     private double ativoValorLocacao;
 
+    private String ativoPatrimonio;
+
 }

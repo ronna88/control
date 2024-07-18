@@ -1,6 +1,7 @@
 package br.com.ronna.control.controllers;
 
 import br.com.ronna.control.dtos.AtivoDto;
+import br.com.ronna.control.dtos.AtivoStatusDto;
 import br.com.ronna.control.enums.AtivoStatus;
 import br.com.ronna.control.models.AtivoModel;
 import br.com.ronna.control.services.AtivoService;
@@ -63,10 +64,9 @@ public class AtivoController {
         var ativoModel = new AtivoModel();
         BeanUtils.copyProperties(ativoDto, ativoModel);
 
-
         ativoModel.setAtivoDataCriacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
-        ativoModel.setAtivoStatus(AtivoStatus.ATIVO);
+        ativoModel.setAtivoStatus(AtivoStatus.DISPONÍVEL);
 
         ativoService.save(ativoModel);
         log.debug("POST criarAtivo ativoModel salvo {}", ativoModel.toString());
@@ -81,7 +81,7 @@ public class AtivoController {
         if(!ativoModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ativo não encontrado!");
         }
-        ativoModelOptional.get().setAtivoStatus(AtivoStatus.DESATIVO);
+        ativoModelOptional.get().setAtivoStatus(AtivoStatus.DELETADO);
         ativoService.save(ativoModelOptional.get());
         return ResponseEntity.status(HttpStatus.OK).body(ativoModelOptional.get());
     }
@@ -97,9 +97,24 @@ public class AtivoController {
             var ativoModel = ativoModelOptional.get();
             BeanUtils.copyProperties(ativoDto, ativoModel);
             ativoModel.setAtivoDataAtualizacao(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
-            ativoModel.setAtivoStatus(AtivoStatus.ATIVO);
+            // ativoModel.setAtivoStatus(AtivoStatus.ATIVO);
             ativoService.save(ativoModel);
             return ResponseEntity.status(HttpStatus.OK).body(ativoModel);
         }
+    }
+
+    //TODO: IMPLEMENTAR ALTERAÇÃO DE STATUS DO ATIVO
+    @PutMapping("/{ativoId}/status")
+    public ResponseEntity<Object> atualizarAtivoStatus(@PathVariable (value="ativoId") UUID ativoId, @RequestBody AtivoStatusDto ativoStatusDto) {
+        log.debug("Atualizar status do ativoId {}  ...", ativoId);
+        Optional<AtivoModel> ativoModelOptional = ativoService.findById(ativoId);
+        if(!ativoModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Ativo não encontrado!");
+        }
+
+        var ativoModel = ativoModelOptional.get();
+        ativoModel.setAtivoStatus(ativoStatusDto.getAtivoStatus());
+        ativoService.save(ativoModel);
+        return ResponseEntity.status(HttpStatus.OK).body(ativoModel);
     }
 }

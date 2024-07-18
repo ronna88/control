@@ -31,12 +31,6 @@ public class ContratoModel {
     @Column(nullable = false)
     private double contratoValorRemoto;
 
-    //@JsonBackReference
-    //@OneToMany(mappedBy = "contrato")
-    //@Fetch(FetchMode.SUBSELECT)
-    @OneToMany
-    private Set<AtivoModel> listaAtivos;
-
     @OneToOne(optional = false)
     private ClienteModel cliente;
 

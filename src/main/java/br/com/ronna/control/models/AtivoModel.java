@@ -30,6 +30,9 @@ public class AtivoModel {
     private double ativoValorLocacao;
 
     @Column(nullable = false)
+    private String ativoPatrimonio;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AtivoStatus ativoStatus;
 
@@ -41,8 +44,4 @@ public class AtivoModel {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime ativoDataAtualizacao;
 
-    //@JsonManagedReference
-    //@ManyToOne
-    //@JoinColumn(name="contratoId")
-    //private ContratoModel contrato;
 }
