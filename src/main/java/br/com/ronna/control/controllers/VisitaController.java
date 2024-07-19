@@ -21,11 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @Log4j2
@@ -96,18 +96,25 @@ public class VisitaController {
         }
 
         Set<FuncionarioModel> funcTemp = new HashSet<>();
+        AtomicBoolean funcionarioTeste = new AtomicBoolean(false);
         visitaDto.getFuncionarios().forEach(f -> {
             var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionarioId());
-            if(funcionarioModelOptinal.isPresent()){
-                funcTemp.add(f);
+            if(!funcionarioModelOptinal.isPresent()){
+                funcionarioTeste.set(true);
+                return;
             }
+            funcTemp.add(funcionarioModelOptinal.get());
         });
+        if(funcionarioTeste.get()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Erro: Funcionário não encontrado!");
+        }
         visitaModel.setVisitaRemoto(visitaDto.isVisitaRemoto());
         visitaModel.setFuncionarios(funcTemp);
         visitaModel.setCreatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
         visitaModel.setUpdatedDate(LocalDateTime.now(ZoneId.of("America/Sao_Paulo")));
 
         visitaService.save(visitaModel);
+        log.debug(visitaModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(visitaModel);
     }
 
@@ -132,6 +139,11 @@ public class VisitaController {
 
         Set<FuncionarioModel> funcTemp = new HashSet<>();
         visitaDto.getFuncionarios().forEach(f -> {
+            // var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionarioId());
+            // var funcionarioModelOptinal = funcionarioService.findById(f);
+            // if(funcionarioModelOptinal.isPresent()){
+            //    funcTemp.add(funcionarioModelOptinal.get());
+            // }
             var funcionarioModelOptinal = funcionarioService.findById(f.getFuncionarioId());
             if(funcionarioModelOptinal.isPresent()){
                 funcTemp.add(f);
